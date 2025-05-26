@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Деталі товару</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .site-header {
+      background: #ffffff;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 20px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .site-header nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    .site-header nav ul li a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #333;
+      transition: color 0.2s;
+    }
+
+    .site-header nav ul li a:hover {
+      color: #007bff;
+    }
+
+    #productDetails {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    #productDetails img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    #productDetails h2 {
+      margin: 10px 0;
+    }
+
+    #productDetails .price {
+      color: #007b00;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav>
+      <ul>
+        <li><a href="index.html">🏠 Головна</a></li>
+        <li><a href="view-products.html">🪑 Каталог</a></li>
+        <li><a href="cart.html">🛒 Кошик</a></li>
+        <li><a href="profile.html">👤 Профіль</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div id="productDetails">Завантаження...</div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
+
+    async function loadProduct() {
+      try {
+        const res = await fetch(`http://localhost:5000/api/products/${productId}`);
+        if (!res.ok) throw new Error("Не вдалося отримати товар");
+        const product = await res.json();
+
+        document.getElementById("productDetails").innerHTML = `
+          <img src="${product.image}" alt="${product.name}">
+          <h2>${product.name}</h2>
+          <p>${product.description}</p>
+          <p class="price">${product.price} грн</p>
+          <p><em>Категорія: ${product.category}</em></p>
+          <button onclick="addToCart('${product._id}')">🛒 Додати в кошик</button>
+        `;
+      } catch (err) {
+        document.getElementById("productDetails").innerHTML = "<p>Товар не знайдено.</p>";
+      }
+    }
+
+    function addToCart(id) {
+      const cart = JSON.parse(localStorage.getItem("cart")) || {};
+      cart[id] = (cart[id] || 0) + 1;
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("Товар додано до кошика!");
+    }
+
+    loadProduct();
+  </script>
+</body>
+</html>

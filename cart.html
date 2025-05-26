@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Кошик</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .site-header {
+      background: #ffffff;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 20px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .site-header nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    .site-header nav ul li a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #333;
+      transition: color 0.2s;
+    }
+
+    .site-header nav ul li a:hover {
+      color: #007bff;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background: #eee;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .qty-btn {
+      padding: 4px 10px;
+      font-size: 16px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+
+    .remove-btn {
+      color: red;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 16px;
+    }
+
+    .empty {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 18px;
+      color: #666;
+    }
+
+    #cartCount {
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav>
+      <ul>
+        <li><a href="index.html">🏠 Головна</a></li>
+        <li><a href="view-products.html">🪑 Каталог</a></li>
+        <li><a href="cart.html">🛒 Кошик <span id="cartCount">(0)</span></a></li>
+        <li><a href="profile.html">👤 Профіль</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <h1>Ваш кошик</h1>
+  <div id="cartContainer"></div>
+  <div class="total" id="totalAmount"></div>
+
+  <script>
+    // ✅ Конвертація старого формату кошика (масив → об’єкт)
+    function convertOldCartFormat() {
+      const raw = JSON.parse(localStorage.getItem("cart"));
+      if (Array.isArray(raw)) {
+        const newCart = {};
+        raw.forEach(id => {
+          newCart[id] = (newCart[id] || 0) + 1;
+        });
+        localStorage.setItem("cart", JSON.stringify(newCart));
+      }
+    }
+
+    convertOldCartFormat();
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || {};
+    const cartContainer = document.getElementById("cartContainer");
+    const totalAmount = document.getElementById("totalAmount");
+
+    if (Object.keys(cart).length === 0) {
+      cartContainer.innerHTML = '<p class="empty">Кошик порожній</p>';
+      totalAmount.textContent = "";
+    } else {
+      loadCartItems();
+    }
+
+    async function loadCartItems() {
+      try {
+        const ids = Object.keys(cart);
+        const productRequests = ids.map(id =>
+          fetch(`http://localhost:5000/api/products/${id}`).then(res => res.json())
+        );
+
+        const products = await Promise.all(productRequests);
+        renderTable(products);
+      } catch (err) {
+        console.error("❌ Помилка завантаження товарів:", err);
+        cartContainer.innerHTML = '<p class="empty">Помилка завантаження кошика</p>';
+      }
+    }
+
+    function renderTable(products) {
+      let total = 0;
+      const table = document.createElement("table");
+
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Назва</th>
+            <th>Ціна</th>
+            <th>Кількість</th>
+            <th>Сума</th>
+            <th>Дія</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${products.map(product => {
+            const qty = cart[product._id] || 0;
+            const sum = product.price * qty;
+            total += sum;
+
+            return `
+              <tr>
+                <td>${product.name}</td>
+                <td>${product.price} грн</td>
+                <td>
+                  <button class="qty-btn" onclick="changeQty('${product._id}', -1)">➖</button>
+                  ${qty}
+                  <button class="qty-btn" onclick="changeQty('${product._id}', 1)">➕</button>
+                </td>
+                <td>${sum} грн</td>
+                <td><button class="remove-btn" onclick="removeItem('${product._id}')">🗑️</button></td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      `;
+
+      cartContainer.innerHTML = "";
+      cartContainer.appendChild(table);
+      totalAmount.textContent = `Загальна сума: ${total} грн`;
+
+      updateCartCount();
+    }
+
+    function changeQty(id, delta) {
+      const current = cart[id] || 0;
+      const newQty = current + delta;
+
+      if (newQty <= 0) {
+        delete cart[id];
+      } else {
+        cart[id] = newQty;
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      location.reload();
+    }
+
+    function removeItem(id) {
+      delete cart[id];
+      localStorage.setItem("cart", JSON.stringify(cart));
+      location.reload();
+    }
+
+    function updateCartCount() {
+      const totalCount = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+      document.getElementById("cartCount").textContent = `(${totalCount})`;
+    }
+
+    updateCartCount();
+  </script>
+</body>
+</html>

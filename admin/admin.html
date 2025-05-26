@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Адмін-панель</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <h1>Адмін-панель: Товари</h1>
+
+  <form id="productForm">
+    <input type="text" name="name" placeholder="Назва товару" required />
+    <textarea name="description" placeholder="Опис"></textarea>
+    <input type="number" name="price" placeholder="Ціна" required />
+    <input type="text" name="category" placeholder="Категорія" required />
+    <input type="text" name="image" placeholder="Посилання на зображення" />
+    <button type="submit">Зберегти</button>
+  </form>
+
+  <p id="result"></p>
+
+  <h2>Список товарів</h2>
+  <table id="productsTable">
+    <thead>
+      <tr>
+        <th>Зображення</th>
+        <th>Назва</th>
+        <th>Ціна</th>
+        <th>Категорія</th>
+        <th>Дії</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="admin.js"></script>
+</body>
+</html>
