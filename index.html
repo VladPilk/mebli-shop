@@ -2,150 +2,115 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <title>Меблевий магазин</title>
+  <title>Головна сторінка</title>
   <style>
     body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5ede6;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      padding: 0;
+      color: #333;
     }
 
-    /* 🔹 Шапка */
-    .site-header {
+    header.site-header {
       background: #ffffff;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 20px;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+      border-bottom: 2px solid #c4a35a;
+      padding: 15px 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 20px;
     }
 
-    .site-header nav ul {
+    header.site-header nav ul {
       list-style: none;
       display: flex;
-      gap: 20px;
+      gap: 25px;
       justify-content: center;
       margin: 0;
       padding: 0;
       flex-wrap: wrap;
     }
 
-    .site-header nav ul li a {
+    header.site-header nav ul li a {
       text-decoration: none;
-      font-weight: bold;
-      color: #333;
+      font-weight: 600;
+      color: #a47c54;
       transition: color 0.2s;
     }
 
-    .site-header nav ul li a:hover {
-      color: #007bff;
+    header.site-header nav ul li a:hover {
+      color: #8f6845;
     }
 
-    .main {
+    h1, h2 {
       text-align: center;
-      padding: 40px 20px 20px;
+      margin: 20px 0;
+      color: #333;
     }
 
-    .main h1 {
-      font-size: 36px;
-      margin-bottom: 10px;
-    }
-
-    .main p {
-      font-size: 20px;
-      margin-bottom: 30px;
-      color: #555;
-    }
-
-    .main a.button {
-      display: inline-block;
-      padding: 12px 30px;
-      font-size: 18px;
-      background: #007bff;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-
-    .main a.button:hover {
-      background: #0056b3;
-    }
-
-    /* 🔹 Слайдер */
-    .slider {
-      max-width: 900px;
-      margin: 30px auto;
-      overflow: hidden;
-      border-radius: 10px;
-    }
-
-    .slides {
-      display: flex;
-      transition: transform 0.6s ease-in-out;
-      width: 300%;
-    }
-
-    .slides a {
-      flex-shrink: 0;
-      width: 100%;
-    }
-
-    .slides img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* 🔹 Рекомендовані товари */
-    .recommended {
+    .slider-container, .recommendations-container {
       max-width: 1000px;
-      margin: 40px auto;
+      margin: 0 auto 40px;
       padding: 0 20px;
     }
 
-    .recommended h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .products-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    .slider, .recommendations {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 20px;
     }
 
-    .product-card {
-      background: #fff;
+    .slider-item, .recommendation-item {
+      background: #ffffff;
       padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+      width: 280px;
       text-align: center;
+      transition: transform 0.2s;
     }
 
-    .product-card img {
+    .slider-item:hover, .recommendation-item:hover {
+      transform: scale(1.02);
+    }
+
+    .slider-item img, .recommendation-item img {
       width: 100%;
-      height: 180px;
-      object-fit: cover;
+      height: 200px;
+      object-fit: contain;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 6px;
       border-radius: 6px;
-    }
-
-    .product-card h3 {
-      margin: 10px 0 5px;
-      font-size: 18px;
+      margin-bottom: 12px;
     }
 
     .price {
-      color: #007b00;
+      color: #c4a35a;
       font-weight: bold;
+      font-size: 17px;
+      margin: 5px 0;
     }
 
-    .product-card a {
+    .button {
+      display: inline-block;
+      background-color: #a47c54;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 6px;
       text-decoration: none;
-      color: inherit;
+      font-weight: bold;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .button:hover {
+      background-color: #8f6845;
     }
   </style>
 </head>
 <body>
+
   <header class="site-header">
     <nav>
       <ul>
@@ -157,89 +122,55 @@
     </nav>
   </header>
 
-  <div class="main">
-    <h1>Ласкаво просимо!</h1>
-    <p>Стильні та якісні меблі для вашого дому</p>
-    <a href="view-products.html" class="button">Перейти до каталогу</a>
+  <h1>Вітаємо у нашому меблевому магазині!</h1>
+
+  <div class="slider-container">
+    <h2>🔥 Популярне зараз</h2>
+    <div class="slider" id="slider"></div>
   </div>
 
-  <!-- 🔄 Слайдер з товарами -->
-  <div class="slider">
-    <div class="slides" id="slideTrack">
-      <!-- Генерується динамічно -->
-    </div>
+  <div class="recommendations-container">
+    <h2>🎯 Рекомендовані товари</h2>
+    <div class="recommendations" id="recommendations"></div>
   </div>
-
-  <!-- ⭐ Рекомендовані товари -->
-  <section class="recommended">
-    <h2>Рекомендовані товари</h2>
-    <div class="products-container" id="recommendedProducts"></div>
-  </section>
 
   <script>
-    let sliderIndex = 0;
-
-    async function initSlider() {
+    async function loadProducts() {
       try {
-        const res = await fetch("http://localhost:5000/api/products");
-        if (!res.ok) throw new Error("Помилка завантаження товарів");
-
+        const res = await fetch("https://mebli-shop-9a1t.onrender.com/api/products");
         const products = await res.json();
-        const randomSlides = products.sort(() => 0.5 - Math.random()).slice(0, 3);
 
-        const track = document.getElementById("slideTrack");
-        track.innerHTML = "";
-
-        randomSlides.forEach(p => {
-          const slide = document.createElement("a");
-          slide.href = `product.html?id=${p._id}`;
-          slide.innerHTML = `<img src="${p.image}" alt="${p.name}" title="${p.name}" />`;
-          track.appendChild(slide);
-        });
-
-        // Запускаємо слайдшоу
-        setInterval(() => {
-          sliderIndex = (sliderIndex + 1) % 3;
-          track.style.transform = `translateX(-${sliderIndex * 100}%)`;
-        }, 3000);
-
-      } catch (err) {
-        console.error("❌ Слайдер не працює:", err);
-      }
-    }
-
-    async function loadRecommended() {
-      try {
-        const res = await fetch("http://localhost:5000/api/products");
-        if (!res.ok) throw new Error("Помилка завантаження товарів");
-
-        const products = await res.json();
         const shuffled = products.sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 4);
+        const sliderItems = shuffled.slice(0, 3);
+        const recommendedItems = shuffled.slice(3, 9);
 
-        const container = document.getElementById("recommendedProducts");
-        container.innerHTML = "";
-
-        selected.forEach(p => {
-          const card = document.createElement("div");
-          card.className = "product-card";
-          card.innerHTML = `
-            <a href="product.html?id=${p._id}">
-              <img src="${p.image}" alt="${p.name}">
-              <h3>${p.name}</h3>
-              <p class="price">${p.price} грн</p>
-            </a>
-          `;
-          container.appendChild(card);
-        });
+        renderItems(sliderItems, "slider");
+        renderItems(recommendedItems, "recommendations");
       } catch (err) {
-        console.error("❌ Рекомендовані не завантажені:", err);
+        console.error("Помилка завантаження товарів:", err);
       }
     }
 
-    // Старт
-    initSlider();
-    loadRecommended();
+    function renderItems(items, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+
+      items.forEach(product => {
+        const div = document.createElement("div");
+        div.className = containerId === "slider" ? "slider-item" : "recommendation-item";
+        div.innerHTML = `
+          <a href="product.html?id=${product._id}">
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <p class="price">${product.price} грн</p>
+            <div><a href="product.html?id=${product._id}" class="button">Детальніше</a></div>
+          </a>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    loadProducts();
   </script>
 </body>
 </html>

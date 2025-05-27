@@ -5,24 +5,25 @@
   <title>Деталі товару</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5ede6;
       padding: 20px;
       margin: 0;
+      color: #333;
     }
 
     .site-header {
       background: #ffffff;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 20px;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+      border-bottom: 2px solid #c4a35a;
+      padding: 15px 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
       margin-bottom: 20px;
     }
 
     .site-header nav ul {
       list-style: none;
       display: flex;
-      gap: 20px;
+      gap: 25px;
       justify-content: center;
       margin: 0;
       padding: 0;
@@ -31,13 +32,13 @@
 
     .site-header nav ul li a {
       text-decoration: none;
-      font-weight: bold;
-      color: #333;
+      font-weight: 600;
+      color: #a47c54;
       transition: color 0.2s;
     }
 
     .site-header nav ul li a:hover {
-      color: #007bff;
+      color: #8f6845;
     }
 
     #productDetails {
@@ -46,13 +47,16 @@
       background: white;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
     }
 
     #productDetails img {
       width: 100%;
       height: 300px;
-      object-fit: cover;
+      object-fit: contain;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 5px;
       border-radius: 6px;
       margin-bottom: 15px;
     }
@@ -62,7 +66,7 @@
     }
 
     #productDetails .price {
-      color: #007b00;
+      color: #c4a35a;
       font-weight: bold;
       font-size: 18px;
     }
@@ -70,16 +74,18 @@
     button {
       margin-top: 15px;
       padding: 10px 20px;
-      background-color: #007bff;
+      background-color: #a47c54;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.2s;
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: #8f6845;
     }
   </style>
 </head>
@@ -103,7 +109,7 @@
 
     async function loadProduct() {
       try {
-        const res = await fetch(`http://localhost:5000/api/products/${productId}`);
+        const res = await fetch(`https://mebli-shop-9a1t.onrender.com/api/products/${productId}`);
         if (!res.ok) throw new Error("Не вдалося отримати товар");
         const product = await res.json();
 

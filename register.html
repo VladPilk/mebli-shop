@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Реєстрація</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5ede6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .register-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 320px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #a47c54;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #a47c54;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #8f6845;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="register-box">
+    <h2>Реєстрація</h2>
+    <form id="registerForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Пароль" required />
+      <select id="role">
+        <option value="user">Користувач</option>
+        <option value="admin">Адміністратор</option>
+      </select>
+      <button type="submit">Зареєструватися</button>
+    </form>
+    <p class="error" id="error"></p>
+  </div>
+
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const role = document.getElementById("role").value;
+
+      try {
+        const res = await fetch("https://mebli-shop-9a1t.onrender.com/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password, role })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          document.getElementById("error").textContent = data.error || "Помилка реєстрації";
+          return;
+        }
+
+        // ✅ Зберігаємо токен та роль
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
+
+        // 🔁 Перенаправлення
+        if (data.role === "admin") {
+          location.href = "admin.html";
+        } else {
+          location.href = "view-products.html";
+        }
+
+      } catch (err) {
+        document.getElementById("error").textContent = "Помилка з'єднання з сервером.";
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -5,18 +5,25 @@
   <title>Адмін-панель</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5ede6;
       padding: 20px;
-      background: #f4f4f4;
+      margin: 0;
+      color: #333;
     }
 
     h1 {
       text-align: center;
+      margin-top: 10px;
     }
 
     form, table {
       margin: 20px auto;
-      max-width: 600px;
+      max-width: 800px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
     input, textarea {
@@ -24,37 +31,75 @@
       padding: 8px;
       margin-bottom: 10px;
       font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
 
     button {
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
+      background-color: #a47c54;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #8f6845;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background: #fff;
     }
 
     th, td {
-      padding: 10px;
+      padding: 12px;
       border: 1px solid #ccc;
       text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f0e6db;
+    }
+
+    td img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 4px;
     }
 
     .actions button {
-      margin-right: 5px;
+      margin-right: 6px;
     }
 
     #result {
       text-align: center;
       margin-top: 10px;
+      color: green;
     }
   </style>
 </head>
 <body>
+
+  <!-- 🔐 Перевірка доступу -->
+  <script>
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (!token || role !== "admin") {
+      window.location.href = "login.html";
+    }
+  </script>
+
   <h1>Адмін-панель: Товари</h1>
 
   <form id="productForm">
@@ -68,10 +113,11 @@
 
   <p id="result"></p>
 
-  <h2>Список товарів</h2>
+  <h2 style="text-align: center;">Список товарів</h2>
   <table id="productsTable">
     <thead>
       <tr>
+        <th>Зображення</th>
         <th>Назва</th>
         <th>Ціна</th>
         <th>Категорія</th>
@@ -82,13 +128,12 @@
   </table>
 
   <script>
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzJkZWY2ZTk1OTNmMTNhNmJiNDRmZSIsImlhdCI6MTc0ODE2NTIzOH0.RuSZLl0mJjFyK5Nd0qfgzZlCA9_3ye1aynJ5TEZcPt4";
-
+    const token = localStorage.getItem("token");
     let editingId = null;
 
     async function fetchProducts() {
       try {
-        const res = await fetch("http://localhost:5000/api/products");
+        const res = await fetch("https://mebli-shop-9a1t.onrender.com/api/products");
         const products = await res.json();
         displayProducts(products);
       } catch (err) {
@@ -104,12 +149,13 @@
         const row = document.createElement("tr");
 
         row.innerHTML = `
+          <td><img src="${product.image}" alt="зображення"></td>
           <td>${product.name}</td>
           <td>${product.price} грн</td>
           <td>${product.category}</td>
           <td class="actions">
-            <button onclick='editProduct(${JSON.stringify(product)})'>✏️ Редагувати</button>
-            <button onclick='deleteProduct("${product._id}")'>🗑️ Видалити</button>
+            <button onclick='editProduct(${JSON.stringify(product)})'>✏️</button>
+            <button onclick='deleteProduct("${product._id}")'>🗑️</button>
           </td>
         `;
 
@@ -132,7 +178,7 @@
       if (!confirm("Ви впевнені, що хочете видалити цей товар?")) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+        const res = await fetch(`https://mebli-shop-9a1t.onrender.com/api/products/${id}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`
@@ -156,8 +202,8 @@
       const data = Object.fromEntries(formData.entries());
 
       const url = editingId 
-        ? `http://localhost:5000/api/products/${editingId}`
-        : "http://localhost:5000/api/products";
+        ? `https://mebli-shop-9a1t.onrender.com/api/products/${editingId}`
+        : "https://mebli-shop-9a1t.onrender.com/api/products";
 
       const method = editingId ? "PUT" : "POST";
 
